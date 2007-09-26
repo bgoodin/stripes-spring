@@ -79,9 +79,13 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
 
     protected ActionBean getActionBeanFromSpringContext(String id, ActionBeanContext actionBeanContext) {
 
-        ActionBean actionBean = (ActionBean) WebApplicationContextUtils
+        ActionBean actionBean;
+
+        actionBean = (ActionBean) WebApplicationContextUtils
                 .getWebApplicationContext(actionBeanContext.getServletContext())
                 .getBean(id);
+
+        if (actionBean == null) throw new RuntimeException("No bean found for id " + id);
 
         return actionBean;
 

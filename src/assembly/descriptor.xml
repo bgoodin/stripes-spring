@@ -11,7 +11,7 @@
             <directory>src/docs/</directory>
             <outputDirectory>docs</outputDirectory>
             <includes>
-                <include>GettingStarted.txt</include>
+                <include>index.html</include>
             </includes>
         </fileSet>
         <fileSet>

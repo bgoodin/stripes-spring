@@ -1,0 +1,193 @@
+<pre>
+=================================
+Summary
+=================================
+
+With Stripes-Spring integration you have a couple of different options along with the
+standard stripes filter support for spring integration. I wanted the ability to inject
+on a constructor So I expanded on the standard Stripes Spring support. I believe I
+stayed within the spirit of Stripes.
+
+=================================
+Download
+=================================
+</pre>
+<p>
+<a href="http://www.silvermindsoftware.com/stripes/stripes-spring-dist-1.0.tar.bz2">stripes-spring-dist-1.0.tar.bz2</a><br/>
+<a href="http://www.silvermindsoftware.com/stripes/stripes-spring-dist-1.0.tar.gz">stripes-spring-dist-1.0.tar.gz</a><br/>
+<a href="http://www.silvermindsoftware.com/stripes/stripes-spring-dist-1.0.zip">stripes-spring-dist-1.0.zip</a><br/>
+</p>
+<pre>
+=================================
+Install
+=================================
+
+********************
+Non-Maven Install
+********************
+After expanding one of the downloaded distributions, place stripes-spring.jar into your
+classpath. Be sure you have spring.jar and stripes.jar in your classpath as well.
+
+
+********************
+If you use Maven 2
+********************
+
+Using Stripes-Spring In Your Project
+Configuring Stripes-Spring in your Maven 2 pom.xml
+
+Add Stripes-Spring to your pom dependency configuration:
+
+&lt;dependencies&gt;
+...
+	&lt;dependency&gt;
+		&lt;groupId&gt;com.silvermindsoftware.stripes&lt;/groupId&gt;
+		&lt;artifactId&gt;stripes-spring&lt;/artifactId&gt;
+		&lt;version&gt;1.0&lt;/version&gt;
+		&lt;scope&gt;compile&lt;/scope&gt;
+	&lt;/dependency&gt;
+...
+&lt;/dependencies&gt;
+
+Add the Stripes-Spring maven repository to your pom repository configuration.
+
+&lt;repositories&gt;
+...
+	&lt;repository&gt;
+		&lt;id&gt;silvermindsoftware.repo&lt;/id&gt;
+		&lt;name&gt;Silvermind Software Release Repo&lt;/name&gt;
+		&lt;url&gt;http://m2.silvermindsoftware.com/repo/&lt;/url&gt;
+		&lt;releases&gt;
+			&lt;checksumPolicy&gt;fail&lt;/checksumPolicy&gt;
+			&lt;updatePolicy&gt;never&lt;/updatePolicy&gt;
+		&lt;/releases&gt;
+		&lt;snapshots&gt;
+			&lt;enabled&gt;false&lt;/enabled&gt;
+		&lt;/snapshots&gt;
+	&lt;/repository&gt;
+...
+&lt;/repositories&gt;
+
+
+=================================
+Use
+=================================
+
+********************
+Introduction
+********************
+
+Stripes-Spring provides Constructor Injection and Spring Managed ActionBeans using
+simple annotations. I feel this is still in the spirit of Stripes. Although Spring managed
+ActionBean support is a bit against the grain of Stripes, I figured i would throw it in
+for those of you who are masochists. The feature that I was mainly targeting is the ability
+to inject on the constructor. This functionality works in concert with the standard Stripes
+filter based Spring support. You can use both together.
+
+********************
+web.xml configuration
+********************
+
+Add the ActionResolver.Class init-param to you web.xml
+
+&lt;init-param&gt;
+    &lt;param-name&gt;ActionResolver.Class&lt;/param-name&gt;
+    &lt;param-value&gt;com.silvermindsoftware.stripes.action.SpringActionResolver&lt;/param-value&gt;
+&lt;/init-param&gt;
+&lt;/code&gt;
+
+EXAMPLE: (Notice it works side by side with existing stripes spring support)
+&lt;code&gt;
+&lt;filter&gt;
+    &lt;display-name&gt;Stripes Filter&lt;/display-name&gt;
+    &lt;filter-name&gt;StripesFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;net.sourceforge.stripes.controller.StripesFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;Interceptor.Classes&lt;/param-name&gt;
+        &lt;param-value&gt;
+            net.sourceforge.stripes.integration.spring.SpringInterceptor,
+            net.sourceforge.stripes.controller.BeforeAfterMethodInterceptor
+        &lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;ActionResolver.PackageFilters&lt;/param-name&gt;
+        &lt;param-value&gt;com.auxilium.web.stripes&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;ActionBeanContext.Class&lt;/param-name&gt;
+        &lt;param-value&gt;com.auxilium.web.AuxActionBeanContext&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;ActionResolver.Class&lt;/param-name&gt;
+        &lt;param-value&gt;com.silvermindsoftware.stripes.action.SpringActionResolver&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/filter&gt;
+
+********************
+Spring Managed Beans
+********************
+
+Using the @SpringManaged annotation on the class level of your ActionBean you can instruct
+Stripes to retrieve your ActionBean from Spring. It has one parameter of "id" that you can use
+if you do not use the convention. You can define your ActionBean and injection in your Spring context
+xml file. Don't forget to set your scope to prototype on the bean (i.e. scope="prototype").
+
+The convention that is used to lookup the managed ActionBean is to take the short name of the
+ActionBean and lower case its first letter.
+
+Ex.
+======
+com.foo.SuperDuperActionBean would have an id of superDuperActionBean
+
+
+You can additionally specify an id that should be retrieved from the Spring context.
+
+Ex.
+======
+@SpringManaged(id="superDuperActionBean")
+
+
+Example usage
+==================
+
+
+@SpringManaged // will look for superDuperActionBean id in your Spring context
+public class SuperDuperActionBean {
+   // body of class
+}
+
+or
+
+@SpringManaged(id = "zuperDuper") // will look for zuperDuper id in your Spring context
+public class SuperDuperActionBean {
+   // body of class
+}
+
+********************
+Constructor Injection
+********************
+
+Constructor Injection allows you to specify a constructor as injectable with the @SpringConstructor.
+You must then specify each constructor parameter with a SpringParam annotation. Each @SpringParam has a refId
+paramter that must be specified. It would be nice if i could use reflection and retrieve the names
+of the parameters as a means of convention. But, Java doesn't provide that nicety. Therefore you must specify
+the refId for each @SpringParam. The refId will be used to lookup the defined bean from the Spring context. The
+found bean will be passed into the constructor at ActionBean instantiation.
+
+Example usage
+==================
+
+public class SuperDuperActionBean {
+    @SpringConstructor
+    public SuperDuperActionBean(
+        @SpringParam(refId="coolDAO") CoolDAO coolDAO) {
+    
+    }
+}
+
+=================================
+SVN
+=================================
+http://www.silvermindsoftware.com/svn/stripes/trunk/
+
+</pre>
