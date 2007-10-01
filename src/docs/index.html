@@ -151,6 +151,9 @@
 <div class="content">
     Stripes-Spring is meant to improve upon the existing support that Stripes provides for Spring. Stripes-Spring provides constructor injection and
     the ability to configure your action beans in a Spring context. This has been done with care to not violate the spirit of Stripe's simplicity.
+    <br/><br/><b>NOTE: Stripes-Spring <span style="color: red; font-weight: bold;">*DOES NOT*</span> require your ActionBeans to be managed by Spring. It provides
+    the ability to have your ActionBeans managed by Spring. It does not require that they be. Care is taken to provide a simple and appropriate
+    option for both Stripes managed injection and Spring Managed injection. Please see <a href="#summary" style="color: #FA7720; text-decoration: none;">summary</a> for further explanation.</b>
 </div>
 <div class="section"><a name="download"></a>Download</div>
 <div class="content">
@@ -227,8 +230,7 @@
         <div class="code">&lt;init-param&gt;
     &lt;param-name&gt;ActionResolver.Class&lt;/param-name&gt;
     &lt;param-value&gt;com.silvermindsoftware.stripes.action.SpringActionResolver&lt;/param-value&gt;
-    &lt;/init-param&gt;
-&lt;/code&gt;</div>
+&lt;/init-param&gt;</div>
 
     You can see here in the larger context of the web.xml that SpringActionResolver works side by side with the standard
     support Stripes provides for Spring.
