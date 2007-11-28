@@ -5,18 +5,38 @@ import com.silvermindsoftware.stripes.integration.spring.SpringManaged;
 import com.silvermindsoftware.stripes.integration.spring.SpringParam;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.ActionBeanContext;
+import net.sourceforge.stripes.config.Configuration;
 import net.sourceforge.stripes.controller.ActionResolver;
 import net.sourceforge.stripes.controller.NameBasedActionResolver;
+import net.sourceforge.stripes.controller.StripesFilter;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
 public class SpringActionResolver extends NameBasedActionResolver implements ActionResolver {
 
+	public static String SPRING_CONTEXT_MANAGER_CLASS_NAME = "SpringContextManager.Class";
+	public static String DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME = "com.silvermindsoftware.stripes.action.DefaultSpringContextManager";
 
-    protected ActionBean makeNewActionBean(Class<? extends ActionBean> aClass, ActionBeanContext actionBeanContext) throws Exception {
+	protected SpringContextManager springContextManager;
+
+	public void init(Configuration configuration) throws Exception {
+		super.init(configuration);
+		ApplicationContext applicationContext;
+
+		String className = configuration.getBootstrapPropertyResolver().getProperty(SPRING_CONTEXT_MANAGER_CLASS_NAME);
+
+		if(className == null || className.trim().equals("")) {
+			springContextManager = (SpringContextManager) Class.forName(DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME).newInstance();
+		} else {
+			springContextManager = (SpringContextManager) Class.forName(className).newInstance();
+		}
+
+	}
+
+	protected ActionBean makeNewActionBean(Class<? extends ActionBean> aClass, ActionBeanContext actionBeanContext) throws Exception {
 
         // check for SpringClass Annotation that retrieves the bean from spring
         if (aClass.isAnnotationPresent(SpringManaged.class)) {
@@ -55,15 +75,13 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
             if (springConstructor != null) {
                 Annotation[][] annotations = springConstructor.getParameterAnnotations();
                 Object[] params = new Object[annotations.length];
+				Configuration configuration = StripesFilter.getConfiguration();
 
-                for (int x = 0; x < annotations.length; x++) {
+				for (int x = 0; x < annotations.length; x++) {
                     for (Annotation annotation : annotations[x]) {
                         if (annotation.annotationType() == SpringParam.class) {
                             SpringParam springParam = (SpringParam) annotation;
-                            params[x] =
-                                    WebApplicationContextUtils
-                                            .getWebApplicationContext(actionBeanContext.getServletContext())
-                                            .getBean(springParam.refId());
+							params[x] = springContextManager.getApplicationContext(actionBeanContext).getBean(springParam.refId());
                         }
                     }
                 }
@@ -81,9 +99,7 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
 
         ActionBean actionBean;
 
-        actionBean = (ActionBean) WebApplicationContextUtils
-                .getWebApplicationContext(actionBeanContext.getServletContext())
-                .getBean(id);
+        actionBean = (ActionBean) springContextManager.getApplicationContext(actionBeanContext).getBean(id);
 
         if (actionBean == null) throw new RuntimeException("No bean found for id " + id);
 
