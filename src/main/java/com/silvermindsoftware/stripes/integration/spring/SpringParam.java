@@ -6,11 +6,10 @@ import java.lang.annotation.*;
 @Target({ElementType.PARAMETER})
 @Documented
 public @interface SpringParam {
-    /**
-     *
-     * This is the id of the bean defined in your Spring context
-     *
-     * @return String
-     */
-    String refId();
+	/**
+	 * This is the id of the bean defined in your Spring context
+	 *
+	 * @return String
+	 */
+	String refId();
 }

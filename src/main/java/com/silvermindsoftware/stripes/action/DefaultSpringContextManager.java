@@ -4,6 +4,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import net.sourceforge.stripes.action.ActionBeanContext;
 
+import javax.servlet.ServletContext;
+
 /**
  * User: brandongoodin
  * Date: Nov 27, 2007
@@ -11,8 +13,8 @@ import net.sourceforge.stripes.action.ActionBeanContext;
  */
 public class DefaultSpringContextManager implements SpringContextManager {
 
-	public ApplicationContext getApplicationContext(ActionBeanContext actionBeanContext) {
-		return WebApplicationContextUtils.getWebApplicationContext(actionBeanContext.getServletContext());
+	public ApplicationContext getApplicationContext(ServletContext servletContext) {
+		return WebApplicationContextUtils.getWebApplicationContext(servletContext);
 	}
 
 }

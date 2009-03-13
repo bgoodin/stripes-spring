@@ -13,17 +13,16 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Documented
 public @interface SpringManaged {
-    /**
-     * This is the id of the bean defined in the Spring context. If no id is specified
-     * the name of the short name of the class will be used and the first letter of the
-     * class will be lower cased.
-     *
-     * For example:
-     *
-     * com.foo.PersonActionBean will be converted to personActionBean for the id
-     *
-     *
-     * @return String
-     */
-    String id() default "";
+	/**
+	 * This is the id of the bean defined in the Spring context. If no id is specified
+	 * the name of the short name of the class will be used and the first letter of the
+	 * class will be lower cased.
+	 * <p/>
+	 * For example:
+	 * <p/>
+	 * com.foo.PersonActionBean will be converted to personActionBean for the id
+	 *
+	 * @return String
+	 */
+	String id() default "";
 }
