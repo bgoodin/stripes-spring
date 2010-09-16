@@ -1,80 +1,362 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+    <head>
+        <title>Stripes Spring</title>
+        <style type="text/css">
+            body {
+                margin: 0px;
+                font-family: sans-serif;
+                font-weight: normal;
+                font-size: 12px;
+            }
+            .header {
+                padding: 20px;
+                background-color: #FA7720;
+                border-bottom: 1px solid #3D3B3A;
+                font-size: 48px;
+                color: #FFFFFF;
+            }
+            
+            #toc {
+                float: left;
+                width: 100px;
+                margin-top: 5px;
+            }
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+            .tocItem {
+                padding-left: 5px;
+                padding-bottom: 5px;
+            }
 
-	<title>bgoodin/stripes-spring @ GitHub</title>
-	
-	<style type="text/css">
-		body {
-  		margin-top: 1.0em;
-  		background-color: #FA7720;
-		  font-family: "Helvetica,Arial,FreeSans";
-  		color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-		h1 { font-size: 3.8em; color: #0588df; margin-bottom: 3px; }
-		h1 .small { font-size: 0.4em; }
-		h1 a { text-decoration: none }
-		h2 { font-size: 1.5em; color: #0588df; }
-    h3 { text-align: center; color: #0588df; }
-    a { color: #0588df; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-		pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-	</style>
-	
-</head>
+            .tocItem a{
+                text-decoration: none;
+                font-weight: bold;
+                color: #3D3B3A;
+            }
 
+            .tocItem a:hover{
+                text-decoration: none;
+                color: #FA7720;
+            }
+
+            .tocItem a:visited{
+                text-decoration: none;
+                color: #918B87;
+            }
+
+            .tocItem a:active{
+                text-decoration: none;
+                color: #3D3B3A;
+            }
+
+            .dl a{
+                text-decoration: none;
+                font-weight: bold;
+                color: #3D3B3A;
+            }
+
+            .dl a:hover{
+                text-decoration: none;
+                color: #FA7720;
+            }
+
+            .dl a:visited{
+                text-decoration: none;
+                color: #918B87;
+            }
+
+            .dl a:active{
+                text-decoration: none;
+                color: #3D3B3A;
+            }
+
+            #mainContent {
+                float: left;
+                width: 700px;
+                margin-top: 5px;
+            }
+
+            .footer {
+                text-align: center;
+                padding: 10px;
+                background-color: #FA7720;
+                border-top: 1px solid #3D3B3A;
+                font-size: 16px;
+                color: #FFFFFF;
+            }
+            
+            .code {
+                border: 2px dashed #918B87;
+                background-color: #ECE5E0;
+                font-family: monospace;
+                white-space: pre;
+                padding: 5px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+            }
+            
+            .section {
+                padding: 5px;
+                background-color: #918B87;
+                color: #FFFFFF;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+            .subsection {
+                padding-top: 5px;
+                padding-left: 5px;
+                background-color: #FFFFFF;
+                color: #3D3B3A;
+                border-bottom: 1px solid #3D3B3A;
+                font-weight: bold;
+            }
+
+            .content {
+                padding: 5px;
+            }
+
+            .example {
+                font-weight: bold;
+            }
+            
+        </style>
+    </head>
 <body>
-  <a href="http://github.com/bgoodin/stripes-spring"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
-
-  <div id="container">
-
-    <div class="download">
-      <a href="http://github.com/bgoodin/stripes-spring/zipball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
-      <a href="http://github.com/bgoodin/stripes-spring/tarball/master">
-        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+<div class="header">
+    Stripes Spring
+</div>
+<div style="clear: both"></div>
+<div id="toc">
+    <div class="tocItem"><a href="#preface">Preface</a></div>
+    <div class="tocItem"><a href="#download">Download</a></div>
+    <div class="tocItem"><a href="#install">Install</a></div>
+    <div class="tocItem"><a href="#use">Use</a>
+        <div class="tocItem" style="padding-top: 5px;"><a href="#introduction">Introduction</a></div>
+        <div class="tocItem"><a href="#configure">Configure</a></div>
+        <div class="tocItem"><a href="#managed">Spring Managed Action Bean</a></div>
+        <div class="tocItem"><a href="#constructor">Consructor Injected Action Bean</a></div>
     </div>
-
-    <h1><a href="http://github.com/bgoodin/stripes-spring">stripes-spring</a>
-      <span class="small">by <a href="http://github.com/bgoodin">bgoodin</a></span></h1>
-
-    <div class="description">
-      Stripes-Spring is meant to improve upon the existing support that Stripes provides for Spring. Stripes-Spring provides constructor injection and the ability to configure your action beans in a Spring context. This has been done with care to not violate the spirit of Stripe's simplicity.
+    <div class="tocItem"><a href="#summary">Summary</a></div>
+    <div class="tocItem"><a href="#source">Source</a></div>
+</div>
+<div id="mainContent">
+<div class="section">
+    <a name="preface"></a>Preface
+</div>
+<div class="content">
+    Stripes-Spring is meant to improve upon the existing support that Stripes provides for Spring. Stripes-Spring provides constructor injection and
+    the ability to configure your action beans in a Spring context. This has been done with care to not violate the spirit of Stripe's simplicity.
+    <br/><br/><b>NOTE: Stripes-Spring <span style="color: red; font-weight: bold;">*DOES NOT*</span> require your ActionBeans to be managed by Spring. It provides
+    the ability to have your ActionBeans managed by Spring. It does not require that they be. Care is taken to provide a simple and appropriate
+    option for both Stripes managed injection and Spring Managed injection. Please see <a href="#summary" style="color: #FA7720; text-decoration: none;">summary</a> for further explanation.</b>
+</div>
+<div class="section"><a name="download"></a>Download</div>
+<div class="content">
+    Right-Click Link and select save as:<br/><br/>
+    <div class="dl"><a href="http://github.com/downloads/bgoodin/stripes-spring/stripes-spring-dist-1.1.bz2">stripes-spring-dist-1.1.tar.bz2</a></div>
+    <div class="dl"><a href="http://github.com/downloads/bgoodin/stripes-spring/stripes-spring-dist-1.1.gz">stripes-spring-dist-1.1.tar.gz</a></div>
+    <div class="dl"><a href="http://github.com/downloads/bgoodin/stripes-spring/stripes-spring-dist-1.1.zip">stripes-spring-dist-1.1.zip</a></div>
+</div>
+<div class="section">
+    <a name="install"></a>Install
+</div>
+<div class="content">
+    <div class="content">
+        After expanding one of the downloaded distributions, place stripes-spring.jar into your
+        classpath. Be sure you have spring.jar and stripes.jar in your classpath as well.
     </div>
-
-    <h2>Authors</h2>
-<p>Brandon Goodin (brandon.goodin@gmail.com)<br/><br/>      </p>
-<h2>Contact</h2>
-<p>Brandon Goodin (brandon.goodin@gmail.com)<br/>      </p>
-
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="http://github.com/bgoodin/stripes-spring/zipball/master">zip</a> or
-      <a href="http://github.com/bgoodin/stripes-spring/tarball/master">tar</a> formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/bgoodin/stripes-spring</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="http://github.com/bgoodin/stripes-spring">bgoodin/stripes-spring</a>
+    <!-- div class="subsection">
+        <a name="maven-install"></a>Maven 2 Install
+    </div -->
+    <!-- div class="content">
+    Add Stripes-Spring to your pom dependency configuration:
+    <div class="code">&lt;dependencies&gt;
+    ...
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.silvermindsoftware.stripes&lt;/groupId&gt;
+        &lt;artifactId&gt;stripes-spring&lt;/artifactId&gt;
+        &lt;version&gt;1.1&lt;/version&gt;
+        &lt;scope&gt;compile&lt;/scope&gt;
+    &lt;/dependency&gt;
+...
+&lt;/dependencies&gt;</div>
+    Add the Stripes-Spring maven repository to your pom repository configuration.
+    <div class="code">&lt;repositories&gt;
+...
+    &lt;repository&gt;
+        &lt;id&gt;silvermindsoftware.repo&lt;/id&gt;
+        &lt;name&gt;Silvermind Software Release Repo&lt;/name&gt;
+        &lt;url&gt;http://m2.silvermindsoftware.com/repo/&lt;/url&gt;
+        &lt;releases&gt;
+            &lt;checksumPolicy&gt;fail&lt;/checksumPolicy&gt;
+            &lt;updatePolicy&gt;never&lt;/updatePolicy&gt;
+        &lt;/releases&gt;
+        &lt;snapshots&gt;
+            &lt;enabled&gt;false&lt;/enabled&gt;
+        &lt;/snapshots&gt;
+    &lt;/repository&gt;
+...
+&lt;/repositories&gt;</div>
+    </div -->
+</div>
+<div class="section">
+    <a name="use"></a>Use
+</div>
+<div class="content">
+    <div class="subsection"><a name="introduction"></a>Introduction</div>
+    <div class="content">
+        Stripes-Spring provides Constructor Injection and "Spring Managed" ActionBeans support using
+        simple annotations. Although "Spring Managed" ActionBean support is a bit against the grain of Stripes
+        I went ahead and added it because i figured it would be useful for some who prefer to handle their
+        injection in the Spring context xml. The feature that I was mainly targeting is the ability to inject
+        on the constructor. This functionality works in concert with the standard Stripes filter based Spring
+        support. You can use both together.
     </div>
+    <div class="subsection"><a name="configure"></a>Configuration</div>
+    <div class="content">
+        Stripes-Spring extends the Stripes default NameBasedActionResolver and overrides the makeNewActionBean method.
+        You will need to configure the SpringActionResolver subclass in the web.xml.
+    </div>
+    <div class="content">
+        Add the ActionResolver.Class init-param to your web.xml
+        <div class="code">&lt;init-param&gt;
+    &lt;param-name&gt;ActionResolver.Class&lt;/param-name&gt;
+    &lt;param-value&gt;com.silvermindsoftware.stripes.action.SpringActionResolver&lt;/param-value&gt;
+&lt;/init-param&gt;</div>
 
-  </div>
+    You can see here in the larger context of the web.xml that SpringActionResolver works side by side with the standard
+    support Stripes provides for Spring.
 
-  
+    <div class="code">&lt;filter&gt;
+    &lt;display-name&gt;Stripes Filter&lt;/display-name&gt;
+    &lt;filter-name&gt;StripesFilter&lt;/filter-name&gt;
+    &lt;filter-class&gt;net.sourceforge.stripes.controller.StripesFilter&lt;/filter-class&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;Interceptor.Classes&lt;/param-name&gt;
+        &lt;param-value&gt;
+        net.sourceforge.stripes.integration.spring.SpringInterceptor,
+        net.sourceforge.stripes.controller.BeforeAfterMethodInterceptor
+        &lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;ActionResolver.PackageFilters&lt;/param-name&gt;
+        &lt;param-value&gt;com.foo.web.stripes&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;ActionResolver.Class&lt;/param-name&gt;
+        &lt;param-value&gt;com.silvermindsoftware.stripes.action.SpringActionResolver&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/filter&gt;</div>
+    </div>
+    <div class="subsection">
+    <a name="managed"></a>Spring Managed Action Beans
+    </div>
+    <div class="content">
+        Using the @SpringManaged annotation on the class level of your ActionBean you can instruct
+        Stripes to retrieve your ActionBean from Spring. It has an optional parameter of "id" that you can use
+        if you do not use the convention. You can define your ActionBean and injection in your Spring context
+        xml file. Don't forget to set your scope to prototype on the bean (i.e. scope="prototype").<br/><br/>
+        The convention that is used to lookup the managed ActionBean is to take the short name of the
+        ActionBean and lower case its first letter.<br/><br/>
+        <div class="example">@SpringManaged annotation parameters</div>
+        <div style="margin-top: 5px; margin-bottom: 5px; width: 400px; border: 2px solid #918B87; background-color: #ECE5E0; padding: 5px;">
+            <div style="width: 96px; float: left; font-weight: bold; border-bottom: 1px solid #918B87; margin-bottom: 5px; padding: 2px; background-color: #FDF6F1;">Parameter</div>
+            <div style="width: 96px; float: left; font-weight: bold; border-bottom: 1px solid #918B87; margin-bottom: 5px; padding: 2px; background-color: #FDF6F1;">Optional</div>
+            <div style="width: 196px; float: left; font-weight: bold; border-bottom: 1px solid #918B87; margin-bottom: 5px; padding: 2px; background-color: #FDF6F1;">Description</div>
+            <div style="clear: both"></div>
+            <div style="width: 98px; float: left; padding-left: 2px;">id</div>
+            <div style="width: 98px; float: left; padding-left: 2px;">Y</div>
+            <div style="width: 198px; float: left; padding-left: 2px;">The id of the bean defined in the spring context</div>
+            <div style="clear: both"></div>
+        </div>
+    </div>
+    <div class="example">Example Spring context XML file</div>
+    <div class="code">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/..."&gt;
+
+    &lt;bean id="superDuperActionBean" class="com.foo.SuperDuperActionBean" scope="prototype"/&gt;
+    &lt;bean id="niftyActionBean" class="com.foo.NeatoActionBean" scope="prototype"/&gt;
+        
+&lt;beans&gt;</div>
+    <div class="example">Example @SpringManaged using convention - will load ActionBean instance from bean id of superDuperActionBean</div>
+    <div class="code">@SpringManaged
+public class SuperDuperActionBean {
+  // body of class
+}</div>
+    <div class="example">Example @SpringManaged using explicit id - will load ActionBean instance from bean id of niftyActionBean</div>
+    <div class="code">@SpringManaged(id = "niftyActionBean")
+public class NeatoActionBean {
+  // body of class
+}</div>
+    <div class="subsection">
+    <a name="constructor"></a>Constructor Injected Action Beans
+    </div>
+    <div class="content">
+        Constructor Injection allows you to specify a constructor as injectable with the @SpringConstructor.
+        You must then specify each constructor parameter with a SpringParam annotation. Each @SpringParam has a refId
+        paramter that must be specified. It would be nice if i could use reflection and retrieve the names
+        of the parameters as a means of convention. But, Java doesn't provide that nicety. Therefore you must specify
+        the refId for each @SpringParam. The refId will be used to lookup the defined bean from the Spring context. The
+        found bean will be passed into the constructor at ActionBean instantiation.<br/><br/>
+        <div class="example">@SpringConstructor - is a simple marker annotation. It has not parameters. It's job is to flag the constructor as the one that will be used to inject into. It is not possible to define more than one @SpringConstructor enabled constructor.</div><br/>
+
+        <div class="example">@SpringParam - is used on each constructor parameter to define which bean will be injected from the Spring context.</div>
+        <div style="margin-top: 5px; margin-bottom: 5px; width: 400px; border: 2px solid #918B87; background-color: #ECE5E0; padding: 5px;">
+            <div style="width: 96px; float: left; font-weight: bold; border-bottom: 1px solid #918B87; margin-bottom: 5px; padding: 2px; background-color: #FDF6F1;">Parameter</div>
+            <div style="width: 96px; float: left; font-weight: bold; border-bottom: 1px solid #918B87; margin-bottom: 5px; padding: 2px; background-color: #FDF6F1;">Optional</div>
+            <div style="width: 196px; float: left; font-weight: bold; border-bottom: 1px solid #918B87; margin-bottom: 5px; padding: 2px; background-color: #FDF6F1;">Description</div>
+            <div style="clear: both"></div>
+            <div style="width: 98px; float: left; padding-left: 2px;">refId</div>
+            <div style="width: 98px; float: left; padding-left: 2px;">N</div>
+            <div style="width: 198px; float: left; padding-left: 2px;">The id of the bean defined in the spring context</div>
+            <div style="clear: both"></div>
+        </div>
+    </div>
+    <div class="example">Example Spring context XML file</div>
+    <div class="code">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/..."&gt;
+
+    &lt;bean id="personManager" class="com.foo.manager.PersonManager"/&gt;
+
+&lt;beans&gt;</div>
+    <div class="example">Example @SpringConsructor Usage</div>
+    <div class="code">public class SuperDuperActionBean {
+
+private PersonManager personManager;
+
+@SpringConstructor
+public SuperDuperActionBean(
+    @SpringParam(refId="personManager") PersonManager personManager)
+    {
+      this.personManager=personManager;
+    }
+
+    // additional handers and setters/getters ommitted for breavity
+}</div>
+</div>
+<div class="section">
+<a name="summary"></a>Summary
+</div>
+<div class="content">
+    In the end the difference betwee @SpringManaged and @SpringConstructor is *who* will instantiate the ActionBean instance. With @SpringManaged it will be Spring.
+    With @SpringConstructor it will be Stripes that will instantiate the ActionBean and lookup the beans to inject on the constructor parameters. Depending on your
+    requirements/biases both work just fine. The big plus is that it makes your classes more easily testable.
+</div>
+<div class="section">
+<a name="source"></a>Source
+</div>
+<div class="content">
+<div class="dl">
+GitHub - <a target="_blank" href="http://github.com/bgoodin/stripes-spring">http://github.com/bgoodin/stripes-spring</a>
+</div>
+</div>
+</div>
+<div style="clear: both"></div>
 </body>
 </html>
