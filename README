@@ -1,0 +1,1 @@
+Stripes-Spring is meant to improve upon the existing support that Stripes provides for Spring. Stripes-Spring provides constructor injection and the ability to configure your action beans in a Spring context. This has been done with care to not violate the spirit of Stripe's simplicity. 
