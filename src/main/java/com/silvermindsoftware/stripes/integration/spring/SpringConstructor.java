@@ -14,4 +14,5 @@ import java.lang.annotation.*;
 @Target({ElementType.CONSTRUCTOR})
 @Documented
 public @interface SpringConstructor {
+	boolean autowire() default true;
 }
