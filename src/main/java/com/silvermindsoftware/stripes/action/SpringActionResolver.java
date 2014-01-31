@@ -8,8 +8,6 @@ import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.config.Configuration;
 import net.sourceforge.stripes.controller.ActionResolver;
 import net.sourceforge.stripes.controller.NameBasedActionResolver;
-import net.sourceforge.stripes.controller.StripesFilter;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
 import java.lang.annotation.Annotation;
@@ -23,10 +21,10 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
 	protected SpringContextManager springContextManager;
 
 	public void init(Configuration configuration) throws Exception {
-		super.init(configuration);
-		ApplicationContext applicationContext;
 
-		String className = configuration.getBootstrapPropertyResolver().getProperty(SPRING_CONTEXT_MANAGER_CLASS_NAME);
+		super.init(configuration);
+
+		final String className = configuration.getBootstrapPropertyResolver().getProperty(SPRING_CONTEXT_MANAGER_CLASS_NAME);
 
 		if (className == null || className.trim().equals("")) {
 			springContextManager = (SpringContextManager) Class.forName(DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME).newInstance();
@@ -43,12 +41,11 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
 
 			SpringManaged springManaged = aClass.getAnnotation(SpringManaged.class);
 
-			String id = null;
-			ActionBean actionBean = null;
+			final String id;
 
 			if (springManaged.id().equals("")) {
 				// preform a lookup on the default class name from the spring context
-				String shortClassName = ClassUtils.getShortName(aClass);
+				final String shortClassName = ClassUtils.getShortName(aClass);
 				id = shortClassName.substring(0, 1).toLowerCase() + shortClassName.substring(1);
 				return getActionBeanFromSpringContext(id, actionBeanContext);
 
@@ -73,9 +70,8 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
 
 			// if injection is defined in the constructor
 			if (springConstructor != null) {
-				Annotation[][] annotations = springConstructor.getParameterAnnotations();
-				Object[] params = new Object[annotations.length];
-				Configuration configuration = StripesFilter.getConfiguration();
+				final Annotation[][] annotations = springConstructor.getParameterAnnotations();
+				final Object[] params = new Object[annotations.length];
 
 				for (int x = 0; x < annotations.length; x++) {
 					for (Annotation annotation : annotations[x]) {
@@ -87,17 +83,19 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
 				}
 
 				return (ActionBean) springConstructor.newInstance(params);
+
 			}
 
 			// otherwise use default action creation
 			return super.makeNewActionBean(aClass, actionBeanContext);
+
 		}
 
 	}
 
 	protected ActionBean getActionBeanFromSpringContext(String id, ActionBeanContext actionBeanContext) {
 
-		ActionBean actionBean;
+		final ActionBean actionBean;
 
 		actionBean = (ActionBean) springContextManager.getApplicationContext(actionBeanContext.getServletContext()).getBean(id);
 
@@ -106,4 +104,5 @@ public class SpringActionResolver extends NameBasedActionResolver implements Act
 		return actionBean;
 
 	}
+
 }
