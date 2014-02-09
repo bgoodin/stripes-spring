@@ -8,102 +8,166 @@ import net.sourceforge.stripes.action.ActionBeanContext;
 import net.sourceforge.stripes.config.Configuration;
 import net.sourceforge.stripes.controller.ActionResolver;
 import net.sourceforge.stripes.controller.NameBasedActionResolver;
-import net.sourceforge.stripes.controller.StripesFilter;
+import net.sourceforge.stripes.exception.StripesServletException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.ClassUtils;
 
+import javax.servlet.ServletContext;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 
 public class SpringActionResolver extends NameBasedActionResolver implements ActionResolver {
 
-	public static String SPRING_CONTEXT_MANAGER_CLASS_NAME = "SpringContextManager.Class";
-	public static String DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME = "com.silvermindsoftware.stripes.action.DefaultSpringContextManager";
+    private static final Logger log = LoggerFactory.getLogger(SpringActionResolver.class);
 
-	protected SpringContextManager springContextManager;
+    public static String SPRING_CONTEXT_MANAGER_CLASS_NAME = "SpringContextManager.Class";
+    public static String DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME = "com.silvermindsoftware.stripes.action.DefaultSpringContextManager";
 
-	public void init(Configuration configuration) throws Exception {
-		super.init(configuration);
-		ApplicationContext applicationContext;
+    protected SpringContextManager springContextManager;
 
-		String className = configuration.getBootstrapPropertyResolver().getProperty(SPRING_CONTEXT_MANAGER_CLASS_NAME);
+    public void init(Configuration configuration) throws Exception {
 
-		if (className == null || className.trim().equals("")) {
-			springContextManager = (SpringContextManager) Class.forName(DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME).newInstance();
-		} else {
-			springContextManager = (SpringContextManager) Class.forName(className).newInstance();
-		}
+        super.init(configuration);
 
-	}
+        final String className = configuration.getBootstrapPropertyResolver().getProperty(SPRING_CONTEXT_MANAGER_CLASS_NAME);
 
-	protected ActionBean makeNewActionBean(Class<? extends ActionBean> aClass, ActionBeanContext actionBeanContext) throws Exception {
+        if (className == null || className.trim().equals("")) {
+            log.debug("using {} as spring context manager (default)", DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME);
+            springContextManager = (SpringContextManager) Class.forName(DEFAULT_SPRING_CONTEXT_MANAGER_CLASS_NAME).newInstance();
+        } else {
+            log.debug("using {} as spring context manager", className);
+            springContextManager = (SpringContextManager) Class.forName(className).newInstance();
+        }
 
-		// check for SpringClass Annotation that retrieves the bean from spring
-		if (aClass.isAnnotationPresent(SpringManaged.class)) {
+        log.debug("created spring context manager: ", springContextManager);
 
-			SpringManaged springManaged = aClass.getAnnotation(SpringManaged.class);
+    }
 
-			String id = null;
-			ActionBean actionBean = null;
+    protected ActionBean makeNewActionBean(Class<? extends ActionBean> actionClass, ActionBeanContext actionBeanContext) throws Exception {
 
-			if (springManaged.id().equals("")) {
-				// preform a lookup on the default class name from the spring context
-				String shortClassName = ClassUtils.getShortName(aClass);
-				id = shortClassName.substring(0, 1).toLowerCase() + shortClassName.substring(1);
-				return getActionBeanFromSpringContext(id, actionBeanContext);
+        log.debug("creating action {} with context {}", actionClass, actionBeanContext);
 
-			} else {
-				// perform a lookup against the spring context from a provided bean id
-				return getActionBeanFromSpringContext(springManaged.id(), actionBeanContext);
-			}
+        if (actionClass.isAnnotationPresent(SpringManaged.class)) {
 
-		} else {
+            log.debug("{} is spring managed", actionClass);
 
-			// check for SpringConstructor
+            final SpringManaged springManaged = actionClass.getAnnotation(SpringManaged.class);
 
-			Constructor springConstructor = null;
+            if (springManaged.id().equals("")) {
 
-			// check to see if constructor injection is defined in the the ActionBean
-			for (Constructor constructor : aClass.getConstructors()) {
-				if (constructor.isAnnotationPresent(SpringConstructor.class)) {
-					springConstructor = constructor;
-					break;
-				}
-			}
+                final String shortClassName = ClassUtils.getShortName(actionClass);
+                final String id = shortClassName.substring(0, 1).toLowerCase() + shortClassName.substring(1);
 
-			// if injection is defined in the constructor
-			if (springConstructor != null) {
-				Annotation[][] annotations = springConstructor.getParameterAnnotations();
-				Object[] params = new Object[annotations.length];
-				Configuration configuration = StripesFilter.getConfiguration();
+                log.debug("id not provided for {}, looking for bean using {}", actionClass, id);
 
-				for (int x = 0; x < annotations.length; x++) {
-					for (Annotation annotation : annotations[x]) {
-						if (annotation.annotationType() == SpringParam.class) {
-							SpringParam springParam = (SpringParam) annotation;
-							params[x] = springContextManager.getApplicationContext(actionBeanContext.getServletContext()).getBean(springParam.refId());
-						}
-					}
-				}
+                return getActionBeanFromSpringContext(id, actionBeanContext);
 
-				return (ActionBean) springConstructor.newInstance(params);
-			}
+            } else {
 
-			// otherwise use default action creation
-			return super.makeNewActionBean(aClass, actionBeanContext);
-		}
+                final String id = springManaged.id();
 
-	}
+                log.debug("looking for {} using spring id {}", actionClass, id);
 
-	protected ActionBean getActionBeanFromSpringContext(String id, ActionBeanContext actionBeanContext) {
+                return getActionBeanFromSpringContext(id, actionBeanContext);
 
-		ActionBean actionBean;
+            }
 
-		actionBean = (ActionBean) springContextManager.getApplicationContext(actionBeanContext.getServletContext()).getBean(id);
+        } else {
 
-		if (actionBean == null) throw new RuntimeException("No bean found for id " + id);
+            final Constructor springConstructor = getSpringConstructor(actionClass);
 
-		return actionBean;
+            if (springConstructor != null) {
 
-	}
+                final Object[] params = new Object[springConstructor.getParameterTypes().length];
+
+                log.debug("{} has {} parameters", springConstructor, params.length);
+
+                final ServletContext servletContext = actionBeanContext.getServletContext();
+                final ApplicationContext applicationContext = springContextManager.getApplicationContext(servletContext);
+
+                final Annotation[][] annotations = springConstructor.getParameterAnnotations();
+
+                log.debug("looking for annotated constructor parameters");
+                for (int x = 0; x < params.length; x++) {
+                    for (final Annotation annotation : annotations[x]) {
+                        if (annotation.annotationType() == SpringParam.class) {
+                            final SpringParam springParam = (SpringParam) annotation;
+                            params[x] = applicationContext.getBean(springParam.refId());
+                            log.debug("setting parameter {} to ref {}", x, springParam.refId());
+                        }
+                    }
+                }
+
+                if (isConstructorAutowired(springConstructor)) {
+
+                    log.debug("attempting to autowire {}", springConstructor);
+
+                    final Class[] parameterTypes = springConstructor.getParameterTypes();
+
+                    for (int x = 0; x < params.length; x++) {
+                        if (params[x] == null) {
+                            params[x] = applicationContext.getBean(parameterTypes[x]);
+                            log.debug("set parameter {} to {}", x, params[x]);
+                        }
+                    }
+                }
+
+                return (ActionBean) springConstructor.newInstance(params);
+
+            }
+
+            log.debug("using default action creation");
+            return super.makeNewActionBean(actionClass, actionBeanContext);
+
+        }
+
+    }
+
+    @Override
+    public ActionBean getActionBean(ActionBeanContext context, String urlBinding) throws StripesServletException {
+        return super.getActionBean(context, urlBinding);
+    }
+
+    @Override
+    public ActionBean getActionBean(ActionBeanContext context) throws StripesServletException {
+        return super.getActionBean(context);
+    }
+
+    private boolean isConstructorAutowired(final Constructor constructor) {
+        final SpringConstructor annotation;
+        annotation = (SpringConstructor) constructor.getAnnotation(SpringConstructor.class);
+        return annotation.autowire();
+    }
+
+    private Constructor getSpringConstructor(final Class<? extends ActionBean> actionClass) {
+
+        log.debug("checking constructors of {} for annotations", actionClass);
+
+        for (Constructor constructor : actionClass.getConstructors()) {
+            if (constructor.isAnnotationPresent(SpringConstructor.class)) {
+                log.debug("found annotation on {}", constructor);
+                return constructor;
+            }
+        }
+
+        log.debug("no annotated constructor found for {}", actionClass);
+
+        return null;
+
+    }
+
+    protected ActionBean getActionBeanFromSpringContext(String id, ActionBeanContext actionBeanContext) {
+
+        final ActionBean actionBean;
+
+        actionBean = (ActionBean) springContextManager.getApplicationContext(actionBeanContext.getServletContext()).getBean(id);
+
+        if (actionBean == null) throw new RuntimeException("No bean found for id " + id);
+
+        return actionBean;
+
+    }
+
 }
