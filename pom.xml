@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <version>1.2</version>
     <name>stripes-spring</name>
-    <url>http://www.silvermindsoftware.com/stripes/</url>
+    <url>http://bgoodin.github.io/stripes-spring/</url>
 
     <dependencies>
 
@@ -37,7 +37,7 @@
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- TEST -->
         <dependency>
             <groupId>junit</groupId>
@@ -98,25 +98,27 @@
                 </configuration>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.kuali.maven.wagons</groupId>
+                <artifactId>maven-s3-wagon</artifactId>
+                <version>1.2.1</version>
+            </extension>
+        </extensions>
     </build>
     <distributionManagement>
-        <downloadUrl>http://m2.silvermindsoftware.com/repo/</downloadUrl>
         <repository>
             <uniqueVersion>false</uniqueVersion>
-            <id>silvermindsoftware.release</id>
+            <id>silvermind.release</id>
             <name>Silvermind Software Release Repo</name>
-            <url>
-                scp://m2.silvermindsoftware.com/home/bgoodin/www/m2.silvermindsoftware.com/public_html/repo/
-            </url>
+            <url>s3://maven.silvermind.co/release/</url>
             <layout>default</layout>
         </repository>
         <snapshotRepository>
             <uniqueVersion>true</uniqueVersion>
-            <id>silvermindsoftware.snapshot</id>
+            <id>silvermind.snapshot</id>
             <name>Silvermind Software Snapshot Repo</name>
-            <url>
-                scp://m2.silvermindsoftware.com/home/bgoodin/www/m2.silvermindsoftware.com/public_html/snapshot/
-            </url>
+            <url>s3://maven.silvermind.co/snapshot/</url>
             <layout>default</layout>
         </snapshotRepository>
     </distributionManagement>
