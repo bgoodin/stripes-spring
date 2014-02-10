@@ -33,7 +33,7 @@ Maven setup
 ### Declare jar in your dependencies
 
     <dependency>
-        <groupId>com.silvermindsoftware.stripes</groupId>
+        <groupId>co.silvermind.stripes</groupId>
         <artifactId>stripes-spring</artifactId>
         <version>1.2</version>
     </dependency>
